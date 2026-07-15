@@ -204,7 +204,7 @@ const story = [
   {
     year: "2024–25",
     title: "Today & Beyond",
-    desc: "Trusted by 30+ clients, 50+ projects delivered. Now a full digital growth partner for brands across India.",
+    desc: "Trusted by 100+ clients, 50+ projects delivered. Now a full digital growth partner for brands across India.",
   },
 ];
 
@@ -428,7 +428,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-2 gap-4">
               {[
                 { v: 50, s: "+", l: "Projects Delivered", bg: "bg-blue-600" },
-                { v: 30, s: "+", l: "Active Clients", bg: "bg-indigo-600" },
+                { v: 100, s: "+", l: "Active Clients", bg: "bg-indigo-600" },
                 { v: 2, s: "M+", l: "Ad Reach Generated", bg: "bg-violet-600" },
                 { v: 4, s: "+", l: "Years Experience", bg: "bg-cyan-600" },
               ].map((s, i) => (
