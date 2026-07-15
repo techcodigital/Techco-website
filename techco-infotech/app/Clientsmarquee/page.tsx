@@ -54,7 +54,7 @@ export default function ClientsMarquee() {
               key={i}
               style={{
                 flexShrink: 0,
-                padding: "0 48px",
+                padding: "0 24px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
