@@ -598,27 +598,7 @@ export default function ServicesPage() {
       </section>
 
       {/* ─── FAQ ──────────────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-white via-blue-50/30 to-white relative overflow-hidden">
-        <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-200 rounded-full opacity-20 blur-3xl" />
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <Reveal className="text-center mb-14">
-            <span className="text-blue-600 text-sm font-semibold uppercase tracking-widest">
-              Got Questions?
-            </span>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold text-slate-900 mt-2">
-              Frequently Asked Questions
-            </h2>
-          </Reveal>
-
-          <div className="space-y-4">
-            {faqs.map((f, i) => (
-              <Reveal key={f.q} delay={i * 90} dir={i % 2 === 0 ? "left" : "right"}>
-                <FaqItem q={f.q} a={f.a} />
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+     
 
       {/* ─── CTA ─────────────────────────────────────────────── */}
       <section className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative overflow-hidden">

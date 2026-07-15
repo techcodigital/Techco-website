@@ -175,6 +175,13 @@ function HeroVideo() {
     <video
       ref={videoRef}
       className="absolute inset-0 w-full h-full object-cover"
+      // Forces the video onto its own GPU compositing layer. On some
+      // mobile browsers (iOS Safari in particular), a video painted
+      // inside an overflow-hidden/absolute stack can "bleed" a dark
+      // frame into the section below during scroll compositing.
+      // translateZ(0) + backfaceVisibility pins it to its own layer
+      // so it can never paint outside this section's bounds.
+      style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
       src="/aboutv.mp4"
       autoPlay
       loop
@@ -377,7 +384,10 @@ export default function AboutPage() {
       `}</style>
 
       {/* ─── HERO ─────────────────────────────────────────────── */}
-      <section className="relative pt-28 pb-20 bg-slate-900 overflow-hidden">
+      {/* `isolate` pins this section to its own stacking context so the
+          video/overlay inside it can never paint over sections below
+          during mobile scroll compositing (fixes the black-bleed bug). */}
+      <section className="relative pt-28 pb-20 bg-slate-900 overflow-hidden isolate">
         <HeroVideo />
         <div className="absolute inset-0 bg-slate-900/65" />
         <div
@@ -420,7 +430,11 @@ export default function AboutPage() {
       </section>
 
       {/* ─── ABOUT COMPANY ───────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-white via-blue-50/40 to-white relative overflow-hidden">
+      {/* `relative z-10 isolate` guarantees this section paints as a fresh,
+          fully-opaque layer ON TOP of the hero — so even if the video/overlay
+          above tries to bleed through on scroll, it's covered here. */}
+      <section className="py-24 bg-white relative z-10 isolate overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50/40 to-white" />
         <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full opacity-30 blur-3xl -translate-x-1/2 -translate-y-1/2" />
         <div className="absolute bottom-0 right-0 w-80 h-80 bg-indigo-200 rounded-full opacity-30 blur-3xl translate-x-1/3 translate-y-1/3" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
@@ -498,7 +512,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── OUR STORY TIMELINE ──────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 via-indigo-50/40 to-slate-50 relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-b from-slate-50 via-indigo-50/40 to-slate-50 relative overflow-hidden isolate">
         <div className="absolute top-0 left-0 w-64 h-64 bg-blue-200 rounded-full opacity-20 blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
@@ -530,7 +544,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── MISSION & VISION ────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-white to-indigo-50/50 relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-b from-white to-indigo-50/50 relative overflow-hidden isolate">
         <div className="absolute top-1/3 -right-20 w-72 h-72 bg-violet-200 rounded-full opacity-25 blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8">
@@ -596,7 +610,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── WORK PORTFOLIO ──────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 via-violet-50/30 to-slate-50 relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-b from-slate-50 via-violet-50/30 to-slate-50 relative overflow-hidden isolate">
         <div className="absolute bottom-0 right-0 w-72 h-72 bg-violet-200 rounded-full opacity-20 blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
@@ -640,7 +654,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── QUALITIES ───────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-white via-cyan-50/40 to-white relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-b from-white via-cyan-50/40 to-white relative overflow-hidden isolate">
         <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-cyan-200 rounded-full opacity-25 blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
@@ -669,7 +683,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── TEAM ─────────────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 via-cyan-50/30 to-slate-50 relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-b from-slate-50 via-cyan-50/30 to-slate-50 relative overflow-hidden isolate">
         <div className="absolute top-1/2 left-0 w-64 h-64 bg-cyan-200 rounded-full opacity-20 blur-3xl -translate-x-1/2" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
@@ -713,7 +727,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── TESTIMONIALS ────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-white via-blue-50/30 to-white relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-b from-white via-blue-50/30 to-white relative overflow-hidden isolate">
         <div className="absolute top-0 right-1/4 w-72 h-72 bg-indigo-200 rounded-full opacity-20 blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
@@ -757,7 +771,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── CTA ─────────────────────────────────────────────── */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-white relative overflow-hidden isolate">
         <div className="aurora-blob absolute top-10 right-10 w-72 h-72 bg-white rounded-full opacity-5 blur-3xl" />
         <Reveal>
           <div className="relative max-w-3xl mx-auto px-4 text-center">
@@ -780,7 +794,6 @@ export default function AboutPage() {
     </>
   );
 }
-
 
 
 
