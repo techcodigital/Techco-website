@@ -142,11 +142,6 @@ function HeroVideo() {
     const v = videoRef.current;
     if (!v) return;
 
-    // Some mobile browsers (esp. iOS Safari) silently block autoplay()
-    // even with muted+playsInline if it's called before the video is
-    // fully ready, or if the file itself never loads. We force-attempt
-    // play() on mount and again on canplay, and fall back to a static
-    // gradient background if it never actually plays.
     const tryPlay = () => {
       v.play().catch(() => {
         /* autoplay blocked — will retry on canplay/loadeddata */
@@ -165,7 +160,6 @@ function HeroVideo() {
   }, []);
 
   if (failed) {
-    // Fallback: no broken/black video box, just a clean dark gradient
     return (
       <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
     );
@@ -175,12 +169,6 @@ function HeroVideo() {
     <video
       ref={videoRef}
       className="absolute inset-0 w-full h-full object-cover"
-      // Forces the video onto its own GPU compositing layer. On some
-      // mobile browsers (iOS Safari in particular), a video painted
-      // inside an overflow-hidden/absolute stack can "bleed" a dark
-      // frame into the section below during scroll compositing.
-      // translateZ(0) + backfaceVisibility pins it to its own layer
-      // so it can never paint outside this section's bounds.
       style={{ transform: "translateZ(0)", backfaceVisibility: "hidden" }}
       src="/aboutv.mp4"
       autoPlay
@@ -188,8 +176,6 @@ function HeroVideo() {
       muted
       playsInline
       preload="auto"
-      // poster shows instantly while the video buffers, so mobile
-      // never shows a flash of solid black before playback starts
       poster="/about-hero-poster.jpg"
     />
   );
@@ -222,7 +208,6 @@ const story = [
   },
 ];
 
-/* Portfolio work types — now each has a supporting photo */
 const portfolioTypes = [
   {
     icon: Code2,
@@ -281,7 +266,6 @@ const qualities = [
   { icon: ShieldCheck, title: "Best Support", desc: "From planning to post-launch, consistent support for smooth long-term operations." },
 ];
 
-/* Team — initials-based avatars (no stock photos) */
 const team = [
   {
     name: "Raunak Jashnani",
@@ -384,9 +368,6 @@ export default function AboutPage() {
       `}</style>
 
       {/* ─── HERO ─────────────────────────────────────────────── */}
-      {/* `isolate` pins this section to its own stacking context so the
-          video/overlay inside it can never paint over sections below
-          during mobile scroll compositing (fixes the black-bleed bug). */}
       <section className="relative pt-28 pb-20 bg-slate-900 overflow-hidden isolate">
         <HeroVideo />
         <div className="absolute inset-0 bg-slate-900/65" />
@@ -430,9 +411,6 @@ export default function AboutPage() {
       </section>
 
       {/* ─── ABOUT COMPANY ───────────────────────────────────── */}
-      {/* `relative z-10 isolate` guarantees this section paints as a fresh,
-          fully-opaque layer ON TOP of the hero — so even if the video/overlay
-          above tries to bleed through on scroll, it's covered here. */}
       <section className="py-24 bg-white relative z-10 isolate overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-white via-blue-50/40 to-white" />
         <div className="absolute top-0 left-0 w-72 h-72 bg-blue-200 rounded-full opacity-30 blur-3xl -translate-x-1/2 -translate-y-1/2" />
@@ -512,7 +490,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── OUR STORY TIMELINE ──────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 via-indigo-50/40 to-slate-50 relative overflow-hidden isolate">
+      <section className="py-24 bg-white relative overflow-hidden isolate">
         <div className="absolute top-0 left-0 w-64 h-64 bg-blue-200 rounded-full opacity-20 blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
@@ -544,7 +522,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── MISSION & VISION ────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-white to-indigo-50/50 relative overflow-hidden isolate">
+      <section className="py-24 bg-white relative overflow-hidden isolate">
         <div className="absolute top-1/3 -right-20 w-72 h-72 bg-violet-200 rounded-full opacity-25 blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-8">
@@ -610,7 +588,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── WORK PORTFOLIO ──────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 via-violet-50/30 to-slate-50 relative overflow-hidden isolate">
+      <section className="py-24 bg-white relative overflow-hidden isolate">
         <div className="absolute bottom-0 right-0 w-72 h-72 bg-violet-200 rounded-full opacity-20 blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
@@ -630,15 +608,21 @@ export default function AboutPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {portfolioTypes.map((p, i) => (
               <Reveal key={p.title} delay={i * 90}>
-                <SpotlightCard className="bg-white rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-md hover:-translate-y-1 transition-all duration-300 group h-full overflow-hidden">
-                  <div className="img-zoom h-36 w-full overflow-hidden relative">
-                    <img
-                      src={p.image}
-                      alt={p.alt}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                    <div className="absolute -bottom-5 left-5 w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-all duration-300">
+                <SpotlightCard className="bg-white rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-md hover:-translate-y-1 transition-all duration-300 group h-full">
+                  {/* NOTE: this wrapper has NO overflow-hidden so the icon
+                      badge below (which intentionally hangs half below the
+                      image) is never clipped. Only the image itself clips,
+                      via its own rounded-t-2xl + overflow-hidden. */}
+                  <div className="relative">
+                    <div className="img-zoom h-36 w-full overflow-hidden rounded-t-2xl">
+                      <img
+                        src={p.image}
+                        alt={p.alt}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="absolute -bottom-5 left-5 w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-all duration-300 z-10">
                       <p.icon size={18} className="text-blue-600" />
                     </div>
                   </div>
@@ -654,7 +638,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── QUALITIES ───────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-white via-cyan-50/40 to-white relative overflow-hidden isolate">
+      <section className="py-24 bg-white relative overflow-hidden isolate">
         <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-cyan-200 rounded-full opacity-25 blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
@@ -683,7 +667,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── TEAM ─────────────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 via-cyan-50/30 to-slate-50 relative overflow-hidden isolate">
+      <section className="py-24 bg-white relative overflow-hidden isolate">
         <div className="absolute top-1/2 left-0 w-64 h-64 bg-cyan-200 rounded-full opacity-20 blur-3xl -translate-x-1/2" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
@@ -727,7 +711,7 @@ export default function AboutPage() {
       </section>
 
       {/* ─── TESTIMONIALS ────────────────────────────────────── */}
-      <section className="py-24 bg-gradient-to-b from-white via-blue-50/30 to-white relative overflow-hidden isolate">
+      <section className="py-24 bg-white relative overflow-hidden isolate">
         <div className="absolute top-0 right-1/4 w-72 h-72 bg-indigo-200 rounded-full opacity-20 blur-3xl" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <Reveal className="text-center mb-16">
